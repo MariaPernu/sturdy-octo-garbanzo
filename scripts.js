@@ -15,6 +15,3 @@ document.querySelectorAll('nav a').forEach(link => {
         }
     });
 });
-
-// Pieni humoristinen tervehdys konsolissa
-console.log("Hei, kiitos, että kurkistit tänne! 🙂 Tarvitsetko apua koodissa?");
