@@ -22,16 +22,17 @@
             color: #fff;
             display: flex;
             justify-content: center;
-            padding: 15px 0;
+            padding: 10px 0;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             z-index: 1000;
+            flex-wrap: wrap; /* Lisätty flex-wrap */
         }
 
         nav a {
             color: #fff;
             text-decoration: none;
-            margin: 0 20px;
-            padding: 8px 15px;
+            margin: 0 10px;
+            padding: 8px 10px;
             border-radius: 20px;
             transition: background 0.3s, transform 0.2s;
         }
@@ -74,11 +75,19 @@
 
         @media (max-width: 768px) {
             nav {
-                flex-direction: column;
+                flex-direction: row; /* Muutettu flex-direction */
+                flex-wrap: wrap; /* Lisätty flex-wrap */
+                justify-content: center; /* Keskitetään linkit */
             }
 
             nav a {
-                margin: 10px 0;
+                margin: 5px 10px; /* Pienempi marginaali */
+                padding: 8px 10px;
+            }
+
+            section {
+                padding: 60px 10px;
+                margin-top: 50px;
             }
         }
     </style>
@@ -88,7 +97,6 @@
     <nav>
         <a href="#tietoa">Tietoa</a>
         <a href="#harrastukset">Harrastukset</a>
-        <a href="#huumoria">Huumoria</a>
         <a href="#yhteystiedot">Yhteystiedot</a>
     </nav>
 
@@ -105,12 +113,6 @@
            kokkailen vaihtelevalla menestyksellä ja ulkoilen (joskus jopa sateessa!).</p>
     </section>
 
-    <section id="huumoria">
-        <h1>Huumoria elämään</h1>
-        <p>Miksi ohjelmoija ei mene rannalle? Koska hiekka on bugista! 🐛<br>
-           Tässä vielä toinen: Mitä koodari tilaa kahvilassa? Javaa, tietenkin!</p>
-    </section>
-
     <section id="yhteystiedot">
         <h1>Yhteystiedot</h1>
         <p>Ota yhteyttä sähköpostitse tai kutsu minut kahville, lupaan tuoda huonoja vitsejä mukana!<br>
@@ -118,7 +120,7 @@
     </section>
 
     <footer>
-        <p>&copy; 2025 Esittelysivuni - Kaikki oikeudet pidätetään, paitsi hyvät vitsit.</p>
+        <p>&copy; 2025 Esittelysivuni - Kaikki oikeudet pidätetään.</p>
     </footer>
 
     <script>

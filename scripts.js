@@ -1,17 +1,13 @@
-// JavaScript-tiedosto
+// JavaScript sulavaan siirtymiseen
+document.querySelectorAll('nav a').forEach(linkki => {
+    linkki.addEventListener('click', function(e) {
+        e.preventDefault();
+        const kohdeId = this.getAttribute('href').slice(1);
+        const kohdeElementti = document.getElementById(kohdeId);
 
-// Smooth scroll navigointilinkeille
-document.querySelectorAll('nav a').forEach(link => {
-    link.addEventListener('click', function (event) {
-        event.preventDefault(); // Estä oletustoiminto
-        const targetId = this.getAttribute('href'); // Hae kohteen ID
-        const targetElement = document.querySelector(targetId);
-
-        if (targetElement) {
-            window.scrollTo({
-                top: targetElement.offsetTop - 50, // Vieritys kohteeseen
-                behavior: 'smooth' // Sujuva vieritys
-            });
-        }
+        window.scrollTo({
+            top: kohdeElementti.offsetTop - 60,
+            behavior: 'smooth'
+        });
     });
 });
