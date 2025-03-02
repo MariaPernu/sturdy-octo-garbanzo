@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tietokannan hallinta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"], input[type="email"], input[type="number"] {
+            padding: 10px;
+            margin: 10px 0;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #userList {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #userList li {
+            background-color: #fff;
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .alert {
+            padding: 10px;
+            background-color: #f44336;
+            color: white;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tietokannan testisivu</h1>
+    
+    <div class="alert" id="errorMessage" style="display:none;"></div>
+
+    <h2>Lisää käyttäjä</h2>
+    <form id="addUserForm">
+        <input type="text" id="name" placeholder="Nimi" required>
+        <input type="email" id="email" placeholder="Sähköposti" required>
+        <button type="submit">Lisää käyttäjä</button>
+    </form>
+
+    <h2>Käyttäjätietojen katselu</h2>
+    <button onclick="getUsers()">Näytä käyttäjät</button>
+    <ul id="userList"></ul>
+
+    <h2>Poista käyttäjä</h2>
+    <input type="number" id="userIdToDelete" placeholder="Käyttäjän ID" required>
+    <button onclick="deleteUser()">Poista käyttäjä</button>
+
+    <script>
+        // Käyttäjän lisäys
+        document.getElementById('addUserForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+
+            fetch('http://localhost:3000/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, email })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Käyttäjä lisätty: ' + data.name);
+                document.getElementById('name').value = '';
+                document.getElementById('email').value = '';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('Virhe lisäyksessä!');
+            });
+        });
+
+        // Käyttäjätietojen haku
+        function getUsers() {
+            fetch('http://localhost:3000/users')
+                .then(response => response.json())
+                .then(users => {
+                    const userList = document.getElementById('userList');
+                    userList.innerHTML = '';
+                    users.forEach(user => {
+                        const li = document.createElement('li');
+                        li.textContent = `${user.id}. ${user.name} (${user.email})`;
+                        userList.appendChild(li);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showError('Virhe käyttäjien haussa!');
+                });
+        }
+
+        // Käyttäjän poisto
+        function deleteUser() {
+            const userId = document.getElementById('userIdToDelete').value;
+            
+            if (!userId) {
+                showError('Anna poistettavan käyttäjän ID!');
+                return;
+            }
+
+            fetch(`http://localhost:3000/users/${userId}`, {
+                method: 'DELETE',
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Käyttäjä poistettu: ' + userId);
+                document.getElementById('userIdToDelete').value = '';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('Virhe poistaessa käyttäjää!');
+            });
+        }
+
+        // Näyttää virheilmoituksen
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
