@@ -1,0 +1,23 @@
+# Node.js-dependenssit
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+pnpm-error.log*
+
+# Build-tiedostot
+dist/
+build/
+
+# VS Code -käyttäjäkohtaiset asetukset
+.vscode/
+
+# Yleiset ympäristömuuttujat
+.env
+.env.local
+.env.*.local
+
+# Lokitiedostot
+logs/
+*.log
