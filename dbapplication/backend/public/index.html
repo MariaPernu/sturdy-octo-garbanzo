@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tietokannan hallinta</title>
+    <title>CRUD-sovellus</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,151 +11,110 @@
             padding: 0;
             background-color: #f4f4f4;
         }
-
-        h1, h2 {
-            color: #333;
+        h2 {
+            text-align: center;
         }
-
-        form {
-            margin-bottom: 20px;
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
         }
-
-        input[type="text"], input[type="email"], input[type="number"] {
+        input, button {
+            width: 100%;
             padding: 10px;
-            margin: 10px 0;
-            width: 200px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
-
+        .input-field {
+            width: calc(100% - 20px);
+        }
         button {
-            padding: 10px 15px;
-            background-color: #4CAF50;
+            background: #28a745;
             color: white;
             border: none;
-            border-radius: 4px;
             cursor: pointer;
         }
-
         button:hover {
-            background-color: #45a049;
+            background: #218838;
         }
-
-        #userList {
-            list-style-type: none;
-            padding: 0;
+        .user-list {
+            margin-top: 20px;
         }
-
-        #userList li {
-            background-color: #fff;
-            margin: 5px 0;
+        .user-item {
+            background: #f8f9fa;
             padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            margin-top: 5px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
         }
-
-        .alert {
-            padding: 10px;
-            background-color: #f44336;
-            color: white;
-            margin-bottom: 20px;
+        .actions button {
+            background: #dc3545;
+            cursor: pointer;
+        }
+        .actions button:hover {
+            background: #c82333;
         }
     </style>
 </head>
 <body>
-    <h1>Tietokannan testisivu</h1>
-    
-    <div class="alert" id="errorMessage" style="display:none;"></div>
-
-    <h2>Lisää käyttäjä</h2>
-    <form id="addUserForm">
-        <input type="text" id="name" placeholder="Nimi" required>
-        <input type="email" id="email" placeholder="Sähköposti" required>
-        <button type="submit">Lisää käyttäjä</button>
-    </form>
-
-    <h2>Käyttäjätietojen katselu</h2>
-    <button onclick="getUsers()">Näytä käyttäjät</button>
-    <ul id="userList"></ul>
-
-    <h2>Poista käyttäjä</h2>
-    <input type="number" id="userIdToDelete" placeholder="Käyttäjän ID" required>
-    <button onclick="deleteUser()">Poista käyttäjä</button>
+    <div class="container">
+        <h2>Käyttäjien hallinta</h2>
+        
+        <input type="text" id="name" placeholder="Nimi">
+        <input type="email" id="email" placeholder="Sähköposti">
+        <button onclick="addUser()">Lisää käyttäjä</button>
+        
+        <div class="user-list" id="userList"></div>
+    </div>
 
     <script>
-        // Käyttäjän lisäys
-        document.getElementById('addUserForm').addEventListener('submit', function(event) {
-            event.preventDefault();
+        async function fetchUsers() {
+            const response = await fetch('/users');
+            const users = await response.json();
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '';
+            users.forEach(user => {
+                const userDiv = document.createElement('div');
+                userDiv.classList.add('user-item');
+                userDiv.innerHTML = `<span>${user.name} - ${user.email}</span>
+                    <div class="actions">
+                        <button onclick="deleteUser(${user.id})">Poista</button>
+                    </div>`;
+                userList.appendChild(userDiv);
+            });
+        }
+
+        async function addUser() {
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
-
-            fetch('http://localhost:3000/users', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ name, email })
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert('Käyttäjä lisätty: ' + data.name);
-                document.getElementById('name').value = '';
-                document.getElementById('email').value = '';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showError('Virhe lisäyksessä!');
-            });
-        });
-
-        // Käyttäjätietojen haku
-        function getUsers() {
-            fetch('http://localhost:3000/users')
-                .then(response => response.json())
-                .then(users => {
-                    const userList = document.getElementById('userList');
-                    userList.innerHTML = '';
-                    users.forEach(user => {
-                        const li = document.createElement('li');
-                        li.textContent = `${user.id}. ${user.name} (${user.email})`;
-                        userList.appendChild(li);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showError('Virhe käyttäjien haussa!');
-                });
-        }
-
-        // Käyttäjän poisto
-        function deleteUser() {
-            const userId = document.getElementById('userIdToDelete').value;
             
-            if (!userId) {
-                showError('Anna poistettavan käyttäjän ID!');
+            if (!name || !email) {
+                alert('Täytä kaikki kentät!');
                 return;
             }
-
-            fetch(`http://localhost:3000/users/${userId}`, {
-                method: 'DELETE',
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert('Käyttäjä poistettu: ' + userId);
-                document.getElementById('userIdToDelete').value = '';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showError('Virhe poistaessa käyttäjää!');
+            
+            await fetch('/users', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name, email})
             });
+            
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            fetchUsers();
         }
 
-        // Näyttää virheilmoituksen
-        function showError(message) {
-            const errorMessage = document.getElementById('errorMessage');
-            errorMessage.textContent = message;
-            errorMessage.style.display = 'block';
+        async function deleteUser(id) {
+            await fetch(`/users/${id}`, { method: 'DELETE' });
+            fetchUsers();
         }
+
+        fetchUsers();
     </script>
 </body>
 </html>
